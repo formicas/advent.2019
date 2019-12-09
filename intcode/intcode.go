@@ -2,57 +2,53 @@ package intcode
 
 //Program - represents a program and its code
 type Program struct {
-	Code   []int
-	Input  chan int
-	Output chan int
-	Name   string
-	Halted chan int
+	Code         []int
+	Input        chan int
+	Output       chan int
+	Name         string
+	Halted       chan int
+	relativeBase int
+}
+
+func (p *Program) extendMemory(targetAddress int) {
+	newCode := make([]int, targetAddress+1)
+	copy(newCode, p.Code)
+	p.Code = newCode
 }
 
 //Run - execute a program
 func (p Program) Run() {
-	RunIntCode(p)
-}
-
-//RunIntCode takes program input and does the needful
-func RunIntCode(p Program) {
-	//var intcode []int
-	intcode := p.Code
 	pointer := 0
 	for {
-		instruction := intcode[pointer]
+		instruction := p.Code[pointer]
 
 		opCode := instruction % 100
-		instruction = instruction / 100
-
-		p1Mode := instruction % 10
-		instruction = instruction / 10
-
-		p2Mode := instruction % 10
-		instruction = instruction / 10
-
-		//p3Mode := instruction % 10
+		p1Mode := (instruction / 100) % 10
+		p2Mode := (instruction / 1000) % 10
+		p3Mode := (instruction / 10000) % 10
 
 		switch opCode {
 		case 1:
-			slice := intcode[pointer : pointer+4]
-			p1 := getValue(intcode, p1Mode, slice[1])
-			p2 := getValue(intcode, p2Mode, slice[2])
+			slice := p.Code[pointer : pointer+4]
+			p1 := p.getValue(p1Mode, slice[1])
+			p2 := p.getValue(p2Mode, slice[2])
 
-			intcode[slice[3]] = p1 + p2
+			p.setValue(p3Mode, p1+p2, slice[3])
+			//p.Code[slice[3]] = p1 + p2
 
 			pointer = pointer + 4
 		case 2:
-			slice := intcode[pointer : pointer+4]
-			p1 := getValue(intcode, p1Mode, slice[1])
-			p2 := getValue(intcode, p2Mode, slice[2])
+			slice := p.Code[pointer : pointer+4]
+			p1 := p.getValue(p1Mode, slice[1])
+			p2 := p.getValue(p2Mode, slice[2])
 
-			intcode[slice[3]] = p1 * p2
+			p.setValue(p3Mode, p1*p2, slice[3])
+			//p.Code[slice[3]] = p1 * p2
 
 			pointer = pointer + 4
 		case 3:
-			slice := intcode[pointer : pointer+2]
-			dest := slice[1]
+			slice := p.Code[pointer : pointer+2]
+			//dest := slice[1]
 			// reader := bufio.NewReader(os.Stdin)
 			// fmt.Println("Enter text:")
 			// input, _ := reader.ReadString('\n')
@@ -62,19 +58,21 @@ func RunIntCode(p Program) {
 			// 	os.Exit(2)
 			// }
 			// fmt.Printf("Worker %v awaiting input\n", p)
-			intcode[dest] = <-p.Input
-			// fmt.Printf("Worker %v received %d\n", p, intcode[dest])
+			value := <-p.Input
+			p.setValue(p1Mode, value, slice[1])
+			//p.Code[dest] = <-p.Input
+			// fmt.Printf("Worker %v received %d\n", p, p.Code[dest])
 			pointer = pointer + 2
 		case 4:
-			slice := intcode[pointer : pointer+2]
-			value := getValue(intcode, p1Mode, slice[1])
+			slice := p.Code[pointer : pointer+2]
+			value := p.getValue(p1Mode, slice[1])
 			// fmt.Printf("Worker %v Output: %d\n", p, value)
 			p.Output <- value
 			pointer = pointer + 2
 		case 5:
-			slice := intcode[pointer : pointer+3]
-			value := getValue(intcode, p1Mode, slice[1])
-			newPointer := getValue(intcode, p2Mode, slice[2])
+			slice := p.Code[pointer : pointer+3]
+			value := p.getValue(p1Mode, slice[1])
+			newPointer := p.getValue(p2Mode, slice[2])
 
 			if value != 0 {
 				pointer = newPointer
@@ -82,34 +80,42 @@ func RunIntCode(p Program) {
 				pointer = pointer + 3
 			}
 		case 6:
-			slice := intcode[pointer : pointer+3]
-			value := getValue(intcode, p1Mode, slice[1])
-			newPointer := getValue(intcode, p2Mode, slice[2])
+			slice := p.Code[pointer : pointer+3]
+			value := p.getValue(p1Mode, slice[1])
+			newPointer := p.getValue(p2Mode, slice[2])
 			if value == 0 {
 				pointer = newPointer
 			} else {
 				pointer = pointer + 3
 			}
 		case 7:
-			slice := intcode[pointer : pointer+4]
+			slice := p.Code[pointer : pointer+4]
 			value := 0
-			if getValue(intcode, p1Mode, slice[1]) < getValue(intcode, p2Mode, slice[2]) {
+			if p.getValue(p1Mode, slice[1]) < p.getValue(p2Mode, slice[2]) {
 				value = 1
 			}
 
-			intcode[slice[3]] = value
+			p.setValue(p3Mode, value, slice[3])
+			//p.Code[slice[3]] = value
 
 			pointer = pointer + 4
 		case 8:
-			slice := intcode[pointer : pointer+4]
+			slice := p.Code[pointer : pointer+4]
 			value := 0
-			if getValue(intcode, p1Mode, slice[1]) == getValue(intcode, p2Mode, slice[2]) {
+			if p.getValue(p1Mode, slice[1]) == p.getValue(p2Mode, slice[2]) {
 				value = 1
 			}
 
-			intcode[slice[3]] = value
+			p.setValue(p3Mode, value, slice[3])
+			// p.Code[slice[3]] = value
 
 			pointer = pointer + 4
+		case 9:
+			slice := p.Code[pointer : pointer+2]
+			adjustment := p.getValue(p1Mode, slice[1])
+			p.relativeBase += adjustment
+
+			pointer = pointer + 2
 		case 99:
 			//fmt.Printf("Worker %v halting\n", p.Name)
 			if p.Halted != nil {
@@ -120,11 +126,36 @@ func RunIntCode(p Program) {
 	}
 }
 
-func getValue(intcode []int, mode int, value int) int {
+func (p *Program) getValue(mode int, value int) int {
 	switch mode {
+	case 2:
+		targetAddress := p.relativeBase + value
+		if targetAddress >= len(p.Code) {
+			return 0
+		}
+		return p.Code[targetAddress]
 	case 1:
 		return value
 	default:
-		return intcode[value]
+		if value >= len(p.Code) {
+			return 0
+		}
+		return p.Code[value]
 	}
+}
+
+func (p *Program) setValue(mode int, value int, target int) {
+	var targetAddress int
+	switch mode {
+	case 2:
+		targetAddress = p.relativeBase + target
+	default:
+		targetAddress = target
+	}
+
+	if targetAddress >= len(p.Code) {
+		p.extendMemory(targetAddress)
+	}
+
+	p.Code[targetAddress] = value
 }
