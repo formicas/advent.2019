@@ -14,8 +14,6 @@ type Image struct {
 //GetLayers returns the list of individual layers in a SIF image
 func (img Image) GetLayers() [][]rune {
 	layerSize := img.Width * img.Height
-	fmt.Printf("Code length: %d\n", len(img.Code))
-	fmt.Printf("Layer Size: %d\n", layerSize)
 	layers := make([][]rune, len(img.Code)/layerSize)
 	for i := 0; i < len(layers); i++ {
 		layers[i] = img.Code[i*layerSize : i*layerSize+layerSize]
