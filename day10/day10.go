@@ -6,8 +6,9 @@ import (
 	"sort"
 )
 
+//Vector is just a couple of ints
 type Vector struct {
-	x, y int
+	X, Y int
 }
 
 type asteroid struct {
@@ -88,7 +89,7 @@ func createStarMap(lines []string) []Vector {
 		runes := []rune(line)
 		for j, char := range runes {
 			if char == '#' {
-				asteroids = append(asteroids, Vector{x: j, y: i})
+				asteroids = append(asteroids, Vector{X: j, Y: i})
 			}
 		}
 	}
@@ -112,21 +113,21 @@ func findOptimalAsteroid(asteroids []Vector) (Vector, int) {
 	return optimalAsteroid, mostVisibleAsteroids
 }
 
-//count asteroids visible from x,y
+//count asteroids visible from X,Y
 func countVisibleAsteroids(asteroids []Vector, v Vector) int {
 	failVectors := make(map[Vector]struct{})
 	visibleAsteroids := 0
 
 	for _, a := range asteroids {
 		//skip itself
-		if v.x == a.x && v.y == a.y {
+		if v.X == a.X && v.Y == a.Y {
 			continue
 		}
 
-		diff := Vector{x: a.x - v.x, y: v.y - a.y}
-		gcd := gcd(int(math.Abs(float64(diff.x))), int(math.Abs(float64(diff.y))))
-		diff.x = diff.x / gcd
-		diff.y = diff.y / gcd
+		diff := Vector{X: a.X - v.X, Y: v.Y - a.Y}
+		gcd := gcd(int(math.Abs(float64(diff.X))), int(math.Abs(float64(diff.Y))))
+		diff.X = diff.X / gcd
+		diff.Y = diff.Y / gcd
 
 		_, exists := failVectors[diff]
 		if !exists {
@@ -143,14 +144,14 @@ func getVisibleAsteroids(asteroids []Vector, v Vector) map[Vector]asteroid {
 
 	for _, a := range asteroids {
 		//skip itself
-		if v.x == a.x && v.y == a.y {
+		if v.X == a.X && v.Y == a.Y {
 			continue
 		}
 
-		diff := Vector{x: a.x - v.x, y: v.y - a.y}
-		gcd := gcd(int(math.Abs(float64(diff.x))), int(math.Abs(float64(diff.y))))
-		basicVector := Vector{x: diff.x / gcd, y: diff.y / gcd}
-		distance := diff.x*diff.x + diff.y*diff.y
+		diff := Vector{X: a.X - v.X, Y: v.Y - a.Y}
+		gcd := gcd(int(math.Abs(float64(diff.X))), int(math.Abs(float64(diff.Y))))
+		basicVector := Vector{X: diff.X / gcd, Y: diff.Y / gcd}
+		distance := diff.X*diff.X + diff.Y*diff.Y
 
 		visibleAsteroid, exists := visibleAsteroids[basicVector]
 		if !exists || distance < visibleAsteroid.distance {
@@ -206,7 +207,7 @@ func swapify(left, right int) (int, int) {
 
 //get the angle clockwise from north'
 func getAngle(v Vector) float64 {
-	intermediate := math.Pi/2 - math.Atan2(float64(v.y), float64(v.x))
+	intermediate := math.Pi/2 - math.Atan2(float64(v.Y), float64(v.X))
 	if intermediate >= 0 {
 		return intermediate
 	}
