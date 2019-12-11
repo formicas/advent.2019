@@ -6,6 +6,21 @@ import (
 	"sort"
 )
 
+type Vector struct {
+	x, y int
+}
+
+type asteroid struct {
+	position Vector
+	angle    float64
+	distance int
+}
+
+type asteroidCollection struct {
+	asteroids []asteroid
+	length    int
+}
+
 //DoTheThing that day 10 should do
 func DoTheThing() {
 	lines := []string{
@@ -55,21 +70,6 @@ func DoTheThing() {
 	fmt.Println(c.asteroids[199])
 }
 
-type vector struct {
-	x, y int
-}
-
-type asteroid struct {
-	position vector
-	angle    float64
-	distance int
-}
-
-type asteroidCollection struct {
-	asteroids []asteroid
-	length    int
-}
-
 func (c asteroidCollection) Len() int {
 	return c.length
 }
@@ -82,13 +82,13 @@ func (c asteroidCollection) Swap(i, j int) {
 	c.asteroids[i], c.asteroids[j] = c.asteroids[j], c.asteroids[i]
 }
 
-func createStarMap(lines []string) []vector {
-	asteroids := make([]vector, 0)
+func createStarMap(lines []string) []Vector {
+	asteroids := make([]Vector, 0)
 	for i, line := range lines {
 		runes := []rune(line)
 		for j, char := range runes {
 			if char == '#' {
-				asteroids = append(asteroids, vector{x: j, y: i})
+				asteroids = append(asteroids, Vector{x: j, y: i})
 			}
 		}
 	}
@@ -97,9 +97,9 @@ func createStarMap(lines []string) []vector {
 }
 
 //pick the best asteroid on the star map
-func findOptimalAsteroid(asteroids []vector) (vector, int) {
+func findOptimalAsteroid(asteroids []Vector) (Vector, int) {
 	mostVisibleAsteroids := 0
-	var optimalAsteroid vector
+	var optimalAsteroid Vector
 	for _, a := range asteroids {
 		visibleAsteroids := countVisibleAsteroids(asteroids, a)
 
@@ -113,8 +113,8 @@ func findOptimalAsteroid(asteroids []vector) (vector, int) {
 }
 
 //count asteroids visible from x,y
-func countVisibleAsteroids(asteroids []vector, v vector) int {
-	failVectors := make(map[vector]struct{})
+func countVisibleAsteroids(asteroids []Vector, v Vector) int {
+	failVectors := make(map[Vector]struct{})
 	visibleAsteroids := 0
 
 	for _, a := range asteroids {
@@ -123,7 +123,7 @@ func countVisibleAsteroids(asteroids []vector, v vector) int {
 			continue
 		}
 
-		diff := vector{x: a.x - v.x, y: v.y - a.y}
+		diff := Vector{x: a.x - v.x, y: v.y - a.y}
 		gcd := gcd(int(math.Abs(float64(diff.x))), int(math.Abs(float64(diff.y))))
 		diff.x = diff.x / gcd
 		diff.y = diff.y / gcd
@@ -138,8 +138,8 @@ func countVisibleAsteroids(asteroids []vector, v vector) int {
 	return visibleAsteroids
 }
 
-func getVisibleAsteroids(asteroids []vector, v vector) map[vector]asteroid {
-	visibleAsteroids := make(map[vector]asteroid)
+func getVisibleAsteroids(asteroids []Vector, v Vector) map[Vector]asteroid {
+	visibleAsteroids := make(map[Vector]asteroid)
 
 	for _, a := range asteroids {
 		//skip itself
@@ -147,9 +147,9 @@ func getVisibleAsteroids(asteroids []vector, v vector) map[vector]asteroid {
 			continue
 		}
 
-		diff := vector{x: a.x - v.x, y: v.y - a.y}
+		diff := Vector{x: a.x - v.x, y: v.y - a.y}
 		gcd := gcd(int(math.Abs(float64(diff.x))), int(math.Abs(float64(diff.y))))
-		basicVector := vector{x: diff.x / gcd, y: diff.y / gcd}
+		basicVector := Vector{x: diff.x / gcd, y: diff.y / gcd}
 		distance := diff.x*diff.x + diff.y*diff.y
 
 		visibleAsteroid, exists := visibleAsteroids[basicVector]
@@ -205,7 +205,7 @@ func swapify(left, right int) (int, int) {
 }
 
 //get the angle clockwise from north'
-func getAngle(v vector) float64 {
+func getAngle(v Vector) float64 {
 	intermediate := math.Pi/2 - math.Atan2(float64(v.y), float64(v.x))
 	if intermediate >= 0 {
 		return intermediate

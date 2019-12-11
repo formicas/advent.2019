@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func areEqual(lefts, rights []vector) bool {
+func areEqual(lefts, rights []Vector) bool {
 	if len(lefts) != len(rights) {
 		return false
 	}
@@ -42,16 +42,16 @@ func Test_gcd(t *testing.T) {
 func Test_createStarMap(t *testing.T) {
 	tests := []struct {
 		lines    []string
-		expected []vector
+		expected []Vector
 	}{
-		{[]string{".#", ".."}, []vector{{1, 0}}},
-		{[]string{".#", "#."}, []vector{{1, 0}, {0, 1}}},
+		{[]string{".#", ".."}, []Vector{{1, 0}}},
+		{[]string{".#", "#."}, []Vector{{1, 0}, {0, 1}}},
 		{[]string{
 			".#..#",
 			".....",
 			"#####",
 			"....#",
-			"...##"}, []vector{{1, 0}, {4, 0}, {0, 2}, {1, 2}, {2, 2}, {3, 2}, {4, 2}, {4, 3}, {3, 4}, {4, 4}}},
+			"...##"}, []Vector{{1, 0}, {4, 0}, {0, 2}, {1, 2}, {2, 2}, {3, 2}, {4, 2}, {4, 3}, {3, 4}, {4, 4}}},
 	}
 
 	for _, test := range tests {
@@ -66,7 +66,7 @@ func Test_createStarMap(t *testing.T) {
 func Test_countVisibleAsteroids(t *testing.T) {
 	tests := []struct {
 		lines    []string
-		asteroid vector
+		asteroid Vector
 		expected int
 	}{{
 		[]string{
@@ -75,7 +75,7 @@ func Test_countVisibleAsteroids(t *testing.T) {
 			"#####",
 			"....#",
 			"...##",
-		}, vector{3, 4}, 8},
+		}, Vector{3, 4}, 8},
 	}
 
 	for _, test := range tests {
@@ -93,7 +93,7 @@ func Test_countVisibleAsteroids(t *testing.T) {
 func Test_findOptimalAsteroid(t *testing.T) {
 	tests := []struct {
 		lines            []string
-		expectedAsteroid vector
+		expectedAsteroid Vector
 		expectedTotal    int
 	}{{[]string{
 		".#..#",
@@ -101,7 +101,7 @@ func Test_findOptimalAsteroid(t *testing.T) {
 		"#####",
 		"....#",
 		"...##",
-	}, vector{3, 4}, 8},
+	}, Vector{3, 4}, 8},
 		{[]string{
 			"......#.#.",
 			"#..#.#....",
@@ -113,7 +113,7 @@ func Test_findOptimalAsteroid(t *testing.T) {
 			".##.#..###",
 			"##...#..#.",
 			".#....####",
-		}, vector{5, 8}, 33},
+		}, Vector{5, 8}, 33},
 		{[]string{
 			"#.#...#.#.",
 			".###....#.",
@@ -125,7 +125,7 @@ func Test_findOptimalAsteroid(t *testing.T) {
 			"..##....##",
 			"......#...",
 			".####.###.",
-		}, vector{1, 2}, 35},
+		}, Vector{1, 2}, 35},
 		{[]string{
 			".#..##.###...#######",
 			"##.############..##.",
@@ -147,7 +147,7 @@ func Test_findOptimalAsteroid(t *testing.T) {
 			".#.#.###########.###",
 			"#.#.#.#####.####.###",
 			"###.##.####.##.#..##",
-		}, vector{11, 13}, 210},
+		}, Vector{11, 13}, 210},
 	}
 
 	for _, test := range tests {
@@ -165,17 +165,17 @@ func Test_findOptimalAsteroid(t *testing.T) {
 
 func Test_getAngle(t *testing.T) {
 	tests := []struct {
-		v        vector
+		v        Vector
 		expected float64
 	}{
-		{vector{x: 0, y: 1}, 0},
-		{vector{x: 1, y: 1}, math.Pi / 4},
-		{vector{x: 1, y: 0}, math.Pi / 2},
-		{vector{x: 1, y: -1}, 3 * math.Pi / 4},
-		{vector{x: 0, y: -1}, math.Pi},
-		{vector{x: -1, y: -1}, 5 * math.Pi / 4},
-		{vector{x: -1, y: 0}, 3 * math.Pi / 2},
-		{vector{x: -1, y: 1}, 7 * math.Pi / 4},
+		{Vector{x: 0, y: 1}, 0},
+		{Vector{x: 1, y: 1}, math.Pi / 4},
+		{Vector{x: 1, y: 0}, math.Pi / 2},
+		{Vector{x: 1, y: -1}, 3 * math.Pi / 4},
+		{Vector{x: 0, y: -1}, math.Pi},
+		{Vector{x: -1, y: -1}, 5 * math.Pi / 4},
+		{Vector{x: -1, y: 0}, 3 * math.Pi / 2},
+		{Vector{x: -1, y: 1}, 7 * math.Pi / 4},
 	}
 
 	for _, test := range tests {
