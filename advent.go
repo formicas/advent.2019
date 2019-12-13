@@ -68,4 +68,11 @@ func main() {
 	fmt.Println("---Day 12---")
 	fmt.Println()
 	day12.DoTheThing()
+
+	fmt.Println()
+	fmt.Println("---Day 13---")
+	fmt.Println()
+	//let's not do this every time
+	//day13.DoTheThing()
+	fmt.Println("Nah")
 }

@@ -24,7 +24,7 @@ func DoTheThing() {
 	ySteps := getSteps(y)
 	zSteps := getSteps(z)
 	fmt.Printf("x steps:%d\ny steps:%d\nz steps:%d\n", xSteps, ySteps, zSteps)
-	fmt.Printf("Lowest Common Multiple: %d", lcm([]int{xSteps, ySteps, zSteps}))
+	fmt.Printf("Lowest Common Multiple: %d\n", lcm([]int{xSteps, ySteps, zSteps}))
 }
 
 func lcm(numbers []int) int {
