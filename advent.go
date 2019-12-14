@@ -7,6 +7,7 @@ import (
 	"advent.2019/day10"
 	"advent.2019/day11"
 	"advent.2019/day12"
+	"advent.2019/day14"
 	"advent.2019/day2"
 	"advent.2019/day5"
 	"advent.2019/day6"
@@ -75,4 +76,9 @@ func main() {
 	//let's not do this every time
 	//day13.DoTheThing()
 	fmt.Println("Nah")
+
+	fmt.Println()
+	fmt.Println("---Day 14---")
+	fmt.Println()
+	day14.DoTheThing()
 }
