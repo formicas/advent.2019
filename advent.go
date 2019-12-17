@@ -9,6 +9,7 @@ import (
 	"advent.2019/day12"
 	"advent.2019/day14"
 	"advent.2019/day15"
+	"advent.2019/day16"
 	"advent.2019/day2"
 	"advent.2019/day5"
 	"advent.2019/day6"
@@ -87,4 +88,9 @@ func main() {
 	fmt.Println("---Day 15---")
 	fmt.Println()
 	day15.DoTheThing()
+
+	fmt.Println()
+	fmt.Println("---Day 16---")
+	fmt.Println()
+	day16.DoTheThing()
 }
