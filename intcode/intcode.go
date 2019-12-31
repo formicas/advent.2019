@@ -34,7 +34,6 @@ func (p Program) Run() {
 			p2 := p.getValue(p2Mode, slice[2])
 
 			p.setValue(p3Mode, p1+p2, slice[3])
-			//p.Code[slice[3]] = p1 + p2
 
 			pointer = pointer + 4
 		case 2:
@@ -43,30 +42,19 @@ func (p Program) Run() {
 			p2 := p.getValue(p2Mode, slice[2])
 
 			p.setValue(p3Mode, p1*p2, slice[3])
-			//p.Code[slice[3]] = p1 * p2
 
 			pointer = pointer + 4
 		case 3:
 			slice := p.Code[pointer : pointer+2]
-			//dest := slice[1]
-			// reader := bufio.NewReader(os.Stdin)
-			// fmt.Println("Enter text:")
-			// input, _ := reader.ReadString('\n')
-			// asInt, err := strconv.Atoi(strings.TrimSpace(input))
-			// if err != nil {
-			// 	fmt.Println(err)
-			// 	os.Exit(2)
-			// }
-			// fmt.Printf("Worker %v awaiting input\n", p)
+
 			value := <-p.Input
 			p.setValue(p1Mode, value, slice[1])
-			//p.Code[dest] = <-p.Input
-			// fmt.Printf("Worker %v received %d\n", p, p.Code[dest])
+
 			pointer = pointer + 2
 		case 4:
 			slice := p.Code[pointer : pointer+2]
 			value := p.getValue(p1Mode, slice[1])
-			// fmt.Printf("Worker %v Output: %d\n", p, value)
+
 			p.Output <- value
 			pointer = pointer + 2
 		case 5:
@@ -96,7 +84,6 @@ func (p Program) Run() {
 			}
 
 			p.setValue(p3Mode, value, slice[3])
-			//p.Code[slice[3]] = value
 
 			pointer = pointer + 4
 		case 8:
@@ -107,7 +94,6 @@ func (p Program) Run() {
 			}
 
 			p.setValue(p3Mode, value, slice[3])
-			// p.Code[slice[3]] = value
 
 			pointer = pointer + 4
 		case 9:
@@ -117,7 +103,6 @@ func (p Program) Run() {
 
 			pointer = pointer + 2
 		case 99:
-			//fmt.Printf("Worker %v halting\n", p.Name)
 			if p.Halted != nil {
 				p.Halted <- 1
 			}
