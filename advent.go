@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"advent.2019/day23"
+	"advent.2019/day24"
 )
 
 func main() {
@@ -112,8 +112,13 @@ func main() {
 	// fmt.Println()
 	// day22.DoTheThing()
 
+	// fmt.Println()
+	// fmt.Println("---Day 23---")
+	// fmt.Println()
+	// day23.DoTheThing()
+
 	fmt.Println()
-	fmt.Println("---Day 23---")
+	fmt.Println("---Day 24---")
 	fmt.Println()
-	day23.DoTheThing()
+	day24.DoTheThing()
 }
